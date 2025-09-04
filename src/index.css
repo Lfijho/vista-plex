@@ -80,13 +80,17 @@
   }
 
   body {
-    @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: hsl(222 15% 6%);
+    background: #0f0f0f !important;
+    color: #f8fafc !important;
     background-image: 
-      radial-gradient(circle at 25% 25%, hsl(195 100% 50% / 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, hsl(195 100% 35% / 0.05) 0%, transparent 50%);
+      radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(0, 153, 204, 0.05) 0%, transparent 50%);
     background-attachment: fixed;
+  }
+  
+  * {
+    border-color: hsl(215 25% 20%) !important;
   }
   
   /* Scrollbar Styling */
