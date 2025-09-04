@@ -35,7 +35,7 @@ export const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen p-4 lg:p-8">
+    <div className="min-h-screen bg-background text-foreground p-4 lg:p-8">
       <div className="max-w-[1600px] mx-auto">
         <DashboardHeader />
         
