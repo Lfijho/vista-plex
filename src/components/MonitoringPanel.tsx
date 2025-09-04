@@ -64,11 +64,21 @@ export const MonitoringPanel = ({
   };
 
   return (
-    <div className={`glass-card transition-all duration-300 ${
-      isFullscreen 
-        ? 'fixed inset-4 z-50 h-[calc(100vh-2rem)]' 
-        : 'h-[600px]'
-    }`}>
+    <div 
+      className={`glass-card transition-all duration-300 ${
+        isFullscreen 
+          ? 'fixed inset-4 z-50 h-[calc(100vh-2rem)]' 
+          : 'h-[600px]'
+      }`}
+      style={{
+        backgroundColor: 'rgba(26, 26, 26, 0.8)',
+        border: '1px solid rgba(248, 250, 252, 0.1)',
+        borderRadius: '16px',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        backdropFilter: 'blur(20px)',
+        color: '#f8fafc'
+      }}
+    >
       {/* Header */}
       <div className="p-4 border-b border-card-border flex items-center justify-between">
         <div className="flex items-center gap-3">

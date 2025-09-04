@@ -35,7 +35,12 @@ export const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 lg:p-8">
+    <div className="min-h-screen p-4 lg:p-8" style={{
+      backgroundColor: '#0f0f0f',
+      color: '#f8fafc',
+      backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(0, 153, 204, 0.05) 0%, transparent 50%)',
+      backgroundAttachment: 'fixed'
+    }}>
       <div className="max-w-[1600px] mx-auto">
         <DashboardHeader />
         

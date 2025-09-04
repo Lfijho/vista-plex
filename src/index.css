@@ -4,163 +4,146 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Professional Dark Dashboard Design System */
-@layer base {
-  :root {
-    /* Dark Theme Base Colors */
-    --background: 222 15% 6%;
-    --background-secondary: 222 15% 8%;
-    --background-tertiary: 222 15% 10%;
-    --foreground: 210 40% 98%;
-    
-    /* Glass Morphism */
-    --glass: 222 15% 8% / 0.8;
-    --glass-border: 210 40% 98% / 0.1;
-    --glass-hover: 222 15% 10% / 0.9;
-    
-    /* Primary Cyan/Blue Theme */
-    --primary: 195 100% 50%;
-    --primary-glow: 195 100% 60%;
-    --primary-dark: 195 100% 35%;
-    --primary-foreground: 222 15% 6%;
-    
-    /* Status Colors */
-    --success: 142 76% 36%;
-    --success-glow: 142 76% 46%;
-    --warning: 45 93% 58%;
-    --warning-glow: 45 93% 68%;
-    --danger: 0 72% 51%;
-    --danger-glow: 0 72% 61%;
-    
-    /* Card System */
-    --card: 222 15% 8% / 0.8;
-    --card-border: 210 40% 98% / 0.08;
-    --card-hover: 222 15% 10% / 0.9;
-    --card-foreground: 210 40% 98%;
-    
-    /* Interactive Elements */
-    --muted: 215 25% 27%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 195 100% 50%;
-    --accent-foreground: 222 15% 6%;
-    --border: 215 25% 20%;
-    --input: 215 25% 15%;
-    --ring: 195 100% 50%;
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(222 15% 6%), hsl(222 15% 10%));
-    --gradient-card: linear-gradient(135deg, hsl(222 15% 8% / 0.8), hsl(222 15% 10% / 0.6));
-    --gradient-glow: linear-gradient(135deg, hsl(195 100% 50% / 0.2), hsl(195 100% 35% / 0.1));
-    
-    /* Shadows */
-    --shadow-glow: 0 0 30px hsl(195 100% 50% / 0.3);
-    --shadow-card: 0 8px 32px hsl(222 15% 4% / 0.4);
-    --shadow-elevated: 0 16px 64px hsl(222 15% 4% / 0.6);
-    
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    
-    --radius: 12px;
-    --radius-lg: 16px;
-  }
+/* Force Dark Theme */
+* {
+  border-color: #404040 !important;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  
-  html {
-    color-scheme: dark;
-  }
+html {
+  color-scheme: dark !important;
+  background: #0f0f0f !important;
+}
 
-  html.dark {
-    color-scheme: dark;
-  }
+html.dark {
+  color-scheme: dark !important;
+}
 
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #0f0f0f !important;
-    color: #f8fafc !important;
-    background-image: 
-      radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, rgba(0, 153, 204, 0.05) 0%, transparent 50%);
-    background-attachment: fixed;
-  }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  background: #0f0f0f !important;
+  color: #f8fafc !important;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(0, 153, 204, 0.05) 0%, transparent 50%) !important;
+  background-attachment: fixed;
+}
+
+#root {
+  background: #0f0f0f !important;
+  color: #f8fafc !important;
+  min-height: 100vh;
+}
+
+/* CSS Variables for Dark Theme */
+:root {
+  --background: #0f0f0f;
+  --background-secondary: #1a1a1a;
+  --background-tertiary: #262626;
+  --foreground: #f8fafc;
   
-  * {
-    border-color: hsl(215 25% 20%) !important;
-  }
+  --glass: rgba(26, 26, 26, 0.8);
+  --glass-border: rgba(248, 250, 252, 0.1);
+  --glass-hover: rgba(38, 38, 38, 0.9);
   
-  /* Scrollbar Styling */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
+  --primary: #00d4ff;
+  --primary-glow: #33ddff;
+  --primary-dark: #0099cc;
+  --primary-foreground: #0f0f0f;
   
-  ::-webkit-scrollbar-track {
-    background: hsl(var(--background-secondary));
-  }
+  --success: #22c55e;
+  --success-glow: #4ade80;
+  --warning: #eab308;
+  --warning-glow: #fbbf24;
+  --danger: #ef4444;
+  --danger-glow: #f87171;
   
-  ::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted));
-    border-radius: 4px;
-  }
+  --card: rgba(26, 26, 26, 0.8);
+  --card-border: rgba(248, 250, 252, 0.08);
+  --card-hover: rgba(38, 38, 38, 0.9);
+  --card-foreground: #f8fafc;
   
-  ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary));
-  }
+  --muted: #525252;
+  --muted-foreground: #a3a3a3;
+  --accent: #00d4ff;
+  --accent-foreground: #0f0f0f;
+  --border: #404040;
+  --input: #262626;
+  --ring: #00d4ff;
+  
+  --radius: 12px;
+  --radius-lg: 16px;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #525252;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00d4ff;
 }
 
 /* Glass Morphism Utilities */
 .glass-card {
-  background: hsl(var(--glass));
+  background: rgba(26, 26, 26, 0.8) !important;
   backdrop-filter: blur(20px);
-  border: 1px solid hsl(var(--glass-border));
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(248, 250, 252, 0.1) !important;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .glass-card:hover {
-  background: hsl(var(--glass-hover));
-  border-color: hsl(195 100% 50% / 0.2);
-  box-shadow: var(--shadow-elevated), var(--shadow-glow);
+  background: rgba(38, 38, 38, 0.9) !important;
+  border-color: rgba(0, 212, 255, 0.2) !important;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 212, 255, 0.3);
 }
 
 /* Glow Effects */
 .glow-primary {
-  box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
 
 .glow-success {
-  box-shadow: 0 0 20px hsl(var(--success) / 0.3);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
 }
 
 .glow-warning {
-  box-shadow: 0 0 20px hsl(var(--warning) / 0.3);
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.3);
 }
 
 .glow-danger {
-  box-shadow: 0 0 20px hsl(var(--danger) / 0.3);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
 }
 
 /* Status Indicators */
 .status-dot {
-  @apply w-3 h-3 rounded-full animate-pulse;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
 }
 
 .status-online {
-  background: hsl(var(--success));
-  box-shadow: 0 0 10px hsl(var(--success-glow) / 0.5);
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
 }
 
 .status-warning {
-  background: hsl(var(--warning));
-  box-shadow: 0 0 10px hsl(var(--warning-glow) / 0.5);
+  background: #eab308;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
 }
 
 .status-offline {
-  background: hsl(var(--danger));
-  box-shadow: 0 0 10px hsl(var(--danger-glow) / 0.5);
+  background: #ef4444;
+  box-shadow: 0 0 10px rgba(248, 113, 113, 0.5);
 }

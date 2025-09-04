@@ -21,58 +21,58 @@ export default {
 			fontFamily: {
 				sans: ['Inter', 'system-ui', 'sans-serif'],
 			},
-			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
-				background: {
-					DEFAULT: 'hsl(var(--background))',
-					secondary: 'hsl(var(--background-secondary))',
-					tertiary: 'hsl(var(--background-tertiary))',
-				},
-				foreground: 'hsl(var(--foreground))',
-				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					glow: 'hsl(var(--primary-glow))',
-					dark: 'hsl(var(--primary-dark))',
-					foreground: 'hsl(var(--primary-foreground))'
-				},
-				secondary: {
-					DEFAULT: 'hsl(var(--background-secondary))',
-					foreground: 'hsl(var(--foreground))'
-				},
-				success: {
-					DEFAULT: 'hsl(var(--success))',
-					glow: 'hsl(var(--success-glow))',
-				},
-				warning: {
-					DEFAULT: 'hsl(var(--warning))',
-					glow: 'hsl(var(--warning-glow))',
-				},
-				danger: {
-					DEFAULT: 'hsl(var(--danger))',
-					glow: 'hsl(var(--danger-glow))',
-				},
-				glass: {
-					DEFAULT: 'hsl(var(--glass))',
-					border: 'hsl(var(--glass-border))',
-					hover: 'hsl(var(--glass-hover))',
-				},
-				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
-				},
-				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
-				},
-				card: {
-					DEFAULT: 'hsl(var(--card))',
-					border: 'hsl(var(--card-border))',
-					hover: 'hsl(var(--card-hover))',
-					foreground: 'hsl(var(--card-foreground))'
-				},
+		colors: {
+			border: '#404040',
+			input: '#262626',
+			ring: '#00d4ff',
+			background: {
+				DEFAULT: '#0f0f0f',
+				secondary: '#1a1a1a',
+				tertiary: '#262626',
 			},
+			foreground: '#f8fafc',
+			primary: {
+				DEFAULT: '#00d4ff',
+				glow: '#33ddff',
+				dark: '#0099cc',
+				foreground: '#0f0f0f'
+			},
+			secondary: {
+				DEFAULT: '#1a1a1a',
+				foreground: '#f8fafc'
+			},
+			success: {
+				DEFAULT: '#22c55e',
+				glow: '#4ade80',
+			},
+			warning: {
+				DEFAULT: '#eab308',
+				glow: '#fbbf24',
+			},
+			danger: {
+				DEFAULT: '#ef4444',
+				glow: '#f87171',
+			},
+			glass: {
+				DEFAULT: 'rgba(26, 26, 26, 0.8)',
+				border: 'rgba(248, 250, 252, 0.1)',
+				hover: 'rgba(38, 38, 38, 0.9)',
+			},
+			muted: {
+				DEFAULT: '#525252',
+				foreground: '#a3a3a3'
+			},
+			accent: {
+				DEFAULT: '#00d4ff',
+				foreground: '#0f0f0f'
+			},
+			card: {
+				DEFAULT: 'rgba(26, 26, 26, 0.8)',
+				border: 'rgba(248, 250, 252, 0.08)',
+				hover: 'rgba(38, 38, 38, 0.9)',
+				foreground: '#f8fafc'
+			},
+		},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-card': 'var(--gradient-card)',
