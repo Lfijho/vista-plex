@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { RefreshCw, Maximize2, Minimize2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PortainerContainerStats, UptimeKumaHeartbeatResponse, UptimeKumaStatusPageData } from '@/types';
+import { PortainerContainerStats, UptimeKumaHeartbeatResponse } from '@/types';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import { TooltipProps } from 'recharts';
 
@@ -28,7 +28,7 @@ interface CombinedUptimeData {
     uptime: number;
 }
 
-// --- Constantes da API ---
+// --- Lê a chave da API do ambiente ---
 const PORTAINER_API_KEY = import.meta.env.VITE_PORTAINER_API_KEY;
 const PORTAINER_ENDPOINT_ID = 3;
 
@@ -78,7 +78,6 @@ export const MonitoringPanel = ({
 
         try {
             if (type === 'uptime-kuma' && statusPageSlug) {
-                // CORRIGIDO: Faz as duas chamadas de API em paralelo
                 const [statusPageRes, heartbeatRes] = await Promise.all([
                     fetch(`/api/uptime/api/status-page/${statusPageSlug}`),
                     fetch(`/api/uptime/api/status-page/heartbeat/${statusPageSlug}`)
@@ -87,12 +86,12 @@ export const MonitoringPanel = ({
                 if (!statusPageRes.ok) throw new Error(`Erro na API Status Page: ${statusPageRes.statusText}`);
                 if (!heartbeatRes.ok) throw new Error(`Erro na API Heartbeat: ${heartbeatRes.statusText}`);
 
-                const statusPageData: UptimeKumaStatusPageData = await statusPageRes.json();
+                const statusPageData = await statusPageRes.json();
                 const heartbeatData: UptimeKumaHeartbeatResponse = await heartbeatRes.json();
 
-                const allMonitors = statusPageData.publicGroupList.flatMap(group => group.monitorList);
+                const allMonitors = statusPageData.publicGroupList.flatMap((group: any) => group.monitorList);
 
-                const combinedData = allMonitors.map(monitor => {
+                const combinedData = allMonitors.map((monitor: any) => {
                     const uptime = (heartbeatData.uptimeList[`${monitor.id}_24`] || 0) * 100;
                     const lastHeartbeat = heartbeatData.heartbeatList[monitor.id]?.slice(-1)[0];
                     let status: 'up' | 'down' | 'pending' = 'pending';
@@ -100,15 +99,8 @@ export const MonitoringPanel = ({
                         if (lastHeartbeat.status === 1) status = 'up';
                         else if (lastHeartbeat.status === 0) status = 'down';
                     }
-
-                    return {
-                        id: monitor.id,
-                        name: monitor.name,
-                        status: status,
-                        uptime: uptime
-                    };
+                    return { id: monitor.id, name: monitor.name, status, uptime };
                 });
-
                 setUptimeData(combinedData);
 
             } else if (type === 'portainer' && containerId) {
@@ -118,7 +110,6 @@ export const MonitoringPanel = ({
                 if (!response.ok) throw new Error(`Erro na API do Portainer: ${response.statusText}`);
 
                 const data: PortainerContainerStats = await response.json();
-
                 const cpuDelta = data.cpu_stats.cpu_usage.total_usage - data.precpu_stats.cpu_usage.total_usage;
                 const systemDelta = data.cpu_stats.system_cpu_usage - data.precpu_stats.system_cpu_usage;
                 const cpuCount = data.cpu_stats.online_cpus || 1;
@@ -129,7 +120,6 @@ export const MonitoringPanel = ({
                     cpu: parseFloat(cpuPercentage.toFixed(2)),
                     memory: parseFloat((data.memory_stats.usage / (1024 * 1024)).toFixed(2)),
                 };
-
                 setPortainerStats(prevStats => [...prevStats.slice(-9), newStat]);
             }
         } catch (error) {
