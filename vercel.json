@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/uptime/:path*",
+      "destination": "http://167.172.229.221:3026/api/:path*"
+    },
+    {
+      "source": "/api/portainer/:path*",
+      "destination": "http://167.172.229.221:9000/api/:path*"
+    }
+  ]
+}
