@@ -29,7 +29,7 @@ interface CombinedUptimeData {
 }
 
 // --- Constantes da API ---
-const PORTAINER_API_KEY = 'ptr_82jZQyXfWd24T+cR0IgwS9JP503IN8GhO5+KO0lzIEc=';
+const PORTAINER_API_KEY = import.meta.env.VITE_PORTAINER_API_KEY;
 const PORTAINER_ENDPOINT_ID = 3;
 
 // --- Componentes Auxiliares ---
