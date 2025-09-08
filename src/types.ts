@@ -1,41 +1,30 @@
 // --- Uptime Kuma ---
-// Descreve um monitor com seu nome, vindo da API da página de status
+export interface Heartbeat {
+    status: 0 | 1 | 2;
+    time: string;
+    ping: number;
+}
 export interface UptimeKumaPublicMonitor {
     id: number;
     name: string;
 }
-
-// Descreve os grupos de monitores
 export interface UptimeKumaPublicGroup {
     name: string;
     monitorList: UptimeKumaPublicMonitor[];
 }
-
-// Descreve a resposta da API /api/status-page/<slug>
 export interface UptimeKumaStatusPageData {
     publicGroupList: UptimeKumaPublicGroup[];
 }
-
-// Descreve um 'heartbeat' (uma verificação de status)
-export interface Heartbeat {
-    status: 0 | 1 | 2; // 0 = down, 1 = up, 2 = pending
-    time: string;
-    msg: string;
-    ping: number;
-}
-
-// Descreve a resposta da API /api/status-page/heartbeat/<slug>
 export interface UptimeKumaHeartbeatResponse {
     heartbeatList: {
         [monitorID: string]: Heartbeat[];
     };
     uptimeList: {
-        [monitorID_duration: string]: number; // Ex: "2_24": 1
+        [monitorID_duration: string]: number;
     };
 }
 
-
-// --- Portainer (permanece a mesma) ---
+// --- Portainer ---
 interface CpuUsage {
     total_usage: number;
 }
@@ -50,5 +39,14 @@ export interface PortainerContainerStats {
     memory_stats: {
         usage: number;
         limit: number;
+    };
+}
+
+// --- DigitalOcean ---
+export interface DigitalOceanMetric {
+    data: {
+        result: {
+            values: [number, string][];
+        }[];
     };
 }

@@ -22,7 +22,7 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
   background: #0f0f0f !important;
   color: #f8fafc !important;
-  background-image: 
+  background-image:
     radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
     radial-gradient(circle at 75% 75%, rgba(0, 153, 204, 0.05) 0%, transparent 50%) !important;
   background-attachment: fixed;
@@ -40,28 +40,28 @@ body {
   --background-secondary: #1a1a1a;
   --background-tertiary: #262626;
   --foreground: #f8fafc;
-  
+
   --glass: rgba(26, 26, 26, 0.8);
   --glass-border: rgba(248, 250, 252, 0.1);
   --glass-hover: rgba(38, 38, 38, 0.9);
-  
+
   --primary: #00d4ff;
   --primary-glow: #33ddff;
   --primary-dark: #0099cc;
   --primary-foreground: #0f0f0f;
-  
+
   --success: #22c55e;
   --success-glow: #4ade80;
   --warning: #eab308;
   --warning-glow: #fbbf24;
   --danger: #ef4444;
   --danger-glow: #f87171;
-  
+
   --card: rgba(26, 26, 26, 0.8);
   --card-border: rgba(248, 250, 252, 0.08);
   --card-hover: rgba(38, 38, 38, 0.9);
   --card-foreground: #f8fafc;
-  
+
   --muted: #525252;
   --muted-foreground: #a3a3a3;
   --accent: #00d4ff;
@@ -69,7 +69,7 @@ body {
   --border: #404040;
   --input: #262626;
   --ring: #00d4ff;
-  
+
   --radius: 12px;
   --radius-lg: 16px;
 }
