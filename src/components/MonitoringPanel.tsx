@@ -1,3 +1,5 @@
+// src/components/MonitoringPanel.tsx
+
 import { useState, useEffect, useCallback } from 'react';
 import { RefreshCw, Maximize2, Minimize2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -44,7 +46,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
                 <p className="font-bold text-foreground">{label}</p>
                 {payload.map((entry, index) => (
                     <p key={index} style={{ color: entry.color }}>
-                        {`${entry.name}: ${entry.value}${entry.name === 'CPU' ? '%' : entry.name === 'Load' ? '' : '%'}`}
+                        {`${entry.name}: ${entry.value}${entry.name === 'CPU' ? '%' : entry.name === 'Load' ? '' : ' MB'}`}
                     </p>
                 ))}
             </div>
@@ -82,121 +84,92 @@ export const MonitoringPanel = ({
 
     const fetchDigitalOceanData = useCallback(async (dropletId: string) => {
         try {
-            console.log('🚀 STARTING DIGITALOCEAN FETCH for droplet:', dropletId);
+            console.log('🚀 INICIANDO BUSCA DE DADOS DO DIGITALOCEAN para o droplet:', dropletId);
 
             const now = Math.floor(Date.now() / 1000);
-            const timeRange = 3600; // 1 hora
-            const start = now - timeRange;
+            const start = now - 3600; // 1 hora de dados
 
-            // Buscar dados com timeout
             const fetchWithTimeout = async (url: string, name: string) => {
                 try {
                     const response = await fetch(url, {
-                        signal: AbortSignal.timeout(10000) // 10 segundos timeout
+                        signal: AbortSignal.timeout(15000) // 15 segundos de timeout
                     });
+                    if (!response.ok) {
+                        console.error(`❌ Falha na busca de ${name}: ${response.status} ${response.statusText}`);
+                        return null;
+                    }
                     console.log(`✅ ${name}: ${response.status} ${response.statusText}`);
-                    return response.ok ? await response.json() : null;
+                    return await response.json();
                 } catch (error) {
-                    console.log(`❌ ${name} failed:`, error);
+                    console.error(`❌ Erro na busca de ${name}:`, error);
                     return null;
                 }
             };
 
-            const [cpuData, memTotalData, memAvailableData, diskData] = await Promise.all([
-                fetchWithTimeout(`/api/digitalocean/v2/monitoring/metrics/droplet/cpu?host_id=${dropletId}&start=${start}&end=${now}`, 'CPU'),
-                fetchWithTimeout(`/api/digitalocean/v2/monitoring/metrics/droplet/memory_total?host_id=${dropletId}&start=${start}&end=${now}`, 'Memory Total'),
-                fetchWithTimeout(`/api/digitalocean/v2/monitoring/metrics/droplet/memory_available?host_id=${dropletId}&start=${start}&end=${now}`, 'Memory Available'),
-                fetchWithTimeout(`/api/digitalocean/v2/monitoring/metrics/droplet/filesystem_free?host_id=${dropletId}&start=${start}&end=${now}`, 'Disk Free')
+            const [cpuMetrics, memTotalMetrics, memAvailableMetrics, diskTotalMetrics, diskFreeMetrics] = await Promise.all([
+                fetchWithTimeout(`/api/do/v2/monitoring/metrics/droplet/cpu?host_id=${dropletId}&start=${start}&end=${now}`, 'CPU'),
+                fetchWithTimeout(`/api/do/v2/monitoring/metrics/droplet/memory_total?host_id=${dropletId}&start=${start}&end=${now}`, 'Memória Total'),
+                fetchWithTimeout(`/api/do/v2/monitoring/metrics/droplet/memory_available?host_id=${dropletId}&start=${start}&end=${now}`, 'Memória Disponível'),
+                fetchWithTimeout(`/api/do/v2/monitoring/metrics/droplet/filesystem_size?host_id=${dropletId}&start=${start}&end=${now}`, 'Tamanho do Disco'),
+                fetchWithTimeout(`/api/do/v2/monitoring/metrics/droplet/filesystem_free?host_id=${dropletId}&start=${start}&end=${now}`, 'Disco Livre')
             ]);
 
-            console.log('📊 Data summary:');
-            console.log('CPU result length:', cpuData?.data?.result?.length || 0);
-            console.log('Memory Total result length:', memTotalData?.data?.result?.length || 0);
-            console.log('Memory Available result length:', memAvailableData?.data?.result?.length || 0);
-            console.log('Disk result length:', diskData?.data?.result?.length || 0);
+            let finalCpu = 0;
+            let finalMemory = 0;
+            let finalDisk = 0;
 
-            // Valores padrão para fallback
-            let finalCpu = Math.random() * 15 + 5; // 5-20% CPU simulado
-            let finalMemory = Math.random() * 20 + 40; // 40-60% Memória simulada
-            let finalDisk = Math.random() * 10 + 20; // 20-30% Disco simulado
+            // Cálculo de CPU
+            if (cpuMetrics?.data?.result?.length > 0) {
+                const metrics = cpuMetrics.data.result;
+                const lastValues: { [key: string]: number } = {};
+                const prevValues: { [key: string]: number } = {};
 
-            // Processar CPU se disponível
-            if (cpuData?.data?.result?.length > 0) {
-                console.log('🔥 Processing CPU data...');
+                let hasEnoughData = true;
+                metrics.forEach((metric: any) => {
+                    if (metric.values && metric.values.length > 1) {
+                        lastValues[metric.metric.mode] = parseFloat(metric.values[metric.values.length - 1][1]);
+                        prevValues[metric.metric.mode] = parseFloat(metric.values[metric.values.length - 2][1]);
+                    } else {
+                        hasEnoughData = false;
+                    }
+                });
 
-                const firstMetric = cpuData.data.result[0];
-                if (firstMetric?.values?.length >= 2) {
-                    const lastIndex = firstMetric.values.length - 1;
-                    const secondLastIndex = Math.max(0, lastIndex - 1);
+                if (hasEnoughData) {
+                    const lastTotal = Object.values(lastValues).reduce((a, b) => a + b, 0);
+                    const prevTotal = Object.values(prevValues).reduce((a, b) => a + b, 0);
 
-                    let totalDiff = 0;
-                    let idleDiff = 0;
+                    const lastIdle = lastValues.idle || 0;
+                    const prevIdle = prevValues.idle || 0;
 
-                    cpuData.data.result.forEach((metric: any) => {
-                        if (metric.metric?.mode && metric.values?.length >= 2) {
-                            const lastValue = parseFloat(metric.values[lastIndex][1]) || 0;
-                            const prevValue = parseFloat(metric.values[secondLastIndex][1]) || 0;
-                            const diff = Math.max(0, lastValue - prevValue);
+                    const totalDiff = lastTotal - prevTotal;
+                    const idleDiff = lastIdle - prevIdle;
 
-                            if (metric.metric.mode === 'idle') {
-                                idleDiff = diff;
-                            } else {
-                                totalDiff += diff;
-                            }
-                        }
-                    });
-
-                    const totalCpuTime = totalDiff + idleDiff;
-                    if (totalCpuTime > 0) {
-                        finalCpu = (totalDiff / totalCpuTime) * 100;
-                        console.log('✅ CPU calculated:', finalCpu.toFixed(2) + '%');
+                    if (totalDiff > 0) {
+                        const usage = 100 * (totalDiff - idleDiff) / totalDiff;
+                        finalCpu = Math.max(0, Math.min(100, usage));
                     }
                 }
             }
 
-            // Processar Memória se disponível
-            if (memTotalData?.data?.result?.length > 0 && memAvailableData?.data?.result?.length > 0) {
-                console.log('💾 Processing Memory data...');
 
-                const totalMetric = memTotalData.data.result[0];
-                const availableMetric = memAvailableData.data.result[0];
-
-                if (totalMetric?.values?.length > 0 && availableMetric?.values?.length > 0) {
-                    const totalValue = totalMetric.values[totalMetric.values.length - 1];
-                    const availableValue = availableMetric.values[availableMetric.values.length - 1];
-
-                    if (totalValue?.[1] && availableValue?.[1]) {
-                        const totalBytes = parseFloat(totalValue[1]) || 0;
-                        const availableBytes = parseFloat(availableValue[1]) || 0;
-
-                        if (totalBytes > 0) {
-                            const usedBytes = totalBytes - availableBytes;
-                            finalMemory = (usedBytes / totalBytes) * 100;
-                            console.log('✅ Memory calculated:', finalMemory.toFixed(2) + '%');
-                        }
-                    }
+            // Cálculo de Memória
+            if (memTotalMetrics?.data?.result?.[0]?.values && memAvailableMetrics?.data?.result?.[0]?.values) {
+                const totalMem = parseFloat(memTotalMetrics.data.result[0].values.slice(-1)[0][1]);
+                const availableMem = parseFloat(memAvailableMetrics.data.result[0].values.slice(-1)[0][1]);
+                if (totalMem > 0) {
+                    finalMemory = 100 * (1 - (availableMem / totalMem));
                 }
             }
 
-            // Processar Disco se disponível
-            if (diskData?.data?.result?.length > 0) {
-                console.log('💽 Processing Disk data...');
-
-                const rootFilesystem = diskData.data.result[0];
-                if (rootFilesystem?.values?.length > 0) {
-                    const diskValue = rootFilesystem.values[rootFilesystem.values.length - 1];
-                    if (diskValue?.[1]) {
-                        const freeBytes = parseFloat(diskValue[1]) || 0;
-                        const totalGB = 25; // Assumindo 25GB total
-                        const freeGB = freeBytes / (1024 * 1024 * 1024);
-                        const usedGB = Math.max(0, totalGB - freeGB);
-                        finalDisk = Math.max(0, Math.min(100, (usedGB / totalGB) * 100));
-                        console.log('✅ Disk calculated:', finalDisk.toFixed(2) + '%');
-                    }
+            // Cálculo de Disco
+            if (diskTotalMetrics?.data?.result?.[0]?.values && diskFreeMetrics?.data?.result?.[0]?.values) {
+                const totalDisk = parseFloat(diskTotalMetrics.data.result[0].values.slice(-1)[0][1]);
+                const freeDisk = parseFloat(diskFreeMetrics.data.result[0].values.slice(-1)[0][1]);
+                if (totalDisk > 0) {
+                    finalDisk = 100 * (1 - (freeDisk / totalDisk));
                 }
             }
 
-            // Criar dados finais
             const currentTime = new Date().toLocaleTimeString('pt-BR', {
                 hour: '2-digit',
                 minute: '2-digit'
@@ -206,23 +179,21 @@ export const MonitoringPanel = ({
                 time: currentTime,
                 cpu: parseFloat(finalCpu.toFixed(2)),
                 memory: parseFloat(finalMemory.toFixed(2)),
-                load: parseFloat(finalDisk.toFixed(2))
+                load: parseFloat(finalDisk.toFixed(2)) // Usando 'load' para o disco
             };
 
-            console.log('🎯 FINAL DATA:', newData);
+            console.log('🎯 DADOS FINAIS:', newData);
 
             setDigitalOceanStats(prevStats => [...prevStats.slice(-9), newData]);
 
         } catch (error) {
-            console.error('💥 Error in fetchDigitalOceanData:', error);
+            console.error('💥 Erro em fetchDigitalOceanData:', error);
             throw error;
         }
     }, []);
 
     const fetchData = useCallback(async () => {
-        if (uptimeData.length === 0 && portainerStats.length === 0 && digitalOceanStats.length === 0) {
-            setIsLoading(true);
-        }
+        // Remove a verificação `isLoading` daqui para permitir o refresh manual
         setHasError(false);
         setErrorMessage('');
 
@@ -278,18 +249,37 @@ export const MonitoringPanel = ({
             console.error(`Erro ao buscar dados para '${title}':`, error);
             setHasError(true);
             setErrorMessage(error instanceof Error ? error.message : 'Erro desconhecido');
-        } finally {
-            setIsLoading(false);
         }
-    }, [type, statusPageSlug, containerId, dropletId, title, uptimeData.length, portainerStats.length, digitalOceanStats.length, fetchDigitalOceanData]);
+    }, [type, statusPageSlug, containerId, dropletId, title, fetchDigitalOceanData]);
 
     useEffect(() => {
-        fetchData();
-        const interval = setInterval(fetchData, type === 'digitalocean' ? 60000 : 10000);
-        return () => clearInterval(interval);
-    }, [fetchData, type]);
+        let isMounted = true;
 
-    const handleRefresh = () => fetchData();
+        const initialFetch = async () => {
+            setIsLoading(true);
+            await fetchData();
+            if (isMounted) {
+                setIsLoading(false);
+            }
+        };
+
+        initialFetch();
+
+        const interval = setInterval(fetchData, type === 'digitalocean' ? 60000 : 30000);
+
+        return () => {
+            isMounted = false;
+            clearInterval(interval);
+        };
+    }, [fetchData, type]); // Removido 'isLoading' das dependências
+
+
+    const handleRefresh = useCallback(async () => {
+        setIsLoading(true);
+        await fetchData();
+        setIsLoading(false);
+    }, [fetchData]);
+
     const toggleFullscreen = () => setIsFullscreen(!isFullscreen);
     const overallStatus = uptimeData.length > 0 ? (uptimeData.every(m => m.status === 'up') ? 'online' : 'offline') : 'pending';
 
@@ -306,7 +296,7 @@ export const MonitoringPanel = ({
                 <div className="flex items-center gap-2">
                     {type === 'uptime-kuma' && <div className={`status-dot ${overallStatus === 'online' ? 'status-online' : 'status-offline'}`}></div>}
                     <Button onClick={handleRefresh} size="sm" variant="ghost" className="text-muted-foreground hover:text-primary">
-                        <RefreshCw className={`w-4 h-4 ${isLoading && uptimeData.length === 0 && portainerStats.length === 0 && digitalOceanStats.length === 0 ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
                     </Button>
                     <Button onClick={toggleFullscreen} size="sm" variant="ghost" className="text-muted-foreground hover:text-primary">
                         {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -315,7 +305,7 @@ export const MonitoringPanel = ({
             </div>
 
             <div className="relative flex-grow p-4 overflow-y-auto">
-                {(isLoading && uptimeData.length === 0 && portainerStats.length === 0 && digitalOceanStats.length === 0) && (
+                {isLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10">
                         <div className="flex flex-col items-center gap-4">
                             <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
