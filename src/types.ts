@@ -1,3 +1,4 @@
+// src/types.ts
 // --- Uptime Kuma ---
 export interface Heartbeat {
     status: 0 | 1 | 2;
@@ -46,6 +47,9 @@ export interface PortainerContainerStats {
 export interface DigitalOceanMetric {
     data: {
         result: {
+            metric: {
+                mode?: string;
+            };
             values: [number, string][];
         }[];
     };
